@@ -3,31 +3,30 @@ package hello.hellospring.service;
 import hello.hellospring.domain.Member;
 import hello.hellospring.repository.MemoryMemberRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
-@Transactional
+// @Transactional
 class MemberServiceIntegrationTest {
-    MemberService memberService;
-    MemoryMemberRepository memberRepository;
 
-    @AfterEach
-    public void afterEach(){
-        memberRepository.clearStore();
-    }
+    @Autowired
+    MemberService memberService;
+    @Autowired
+    MemoryMemberRepository memberRepository;
 
     @Test
     void 회원가입() {
         //given
         Member member = new Member();
-        member.setName("hello");
+        member.setName("spring");
+
         //when
         Long saveId = memberService.join(member);
+
         //then
         Member findMember = memberService.findOne(saveId).get();
         org.assertj.core.api.Assertions.assertThat(member.getName()).isEqualTo(findMember.getName());
@@ -35,7 +34,7 @@ class MemberServiceIntegrationTest {
     }
 
     @Test
-    public void 중복_회원_예외(){
+    public void 중복_회원_예외() {
         //given
         Member member1 = new Member();
         member1.setName("spring");
@@ -44,21 +43,13 @@ class MemberServiceIntegrationTest {
         member2.setName("spring");
         //when
         memberService.join(member1);
-        try{
+        try {
             memberService.join(member2);
             fail();
-        } catch(IllegalStateException e){
+        } catch (IllegalStateException e) {
             Assertions.assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
         }
 
         //then
-    }
-
-    @Test
-    void findMembers() {
-    }
-
-    @Test
-    void findOne() {
     }
 }
